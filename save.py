@@ -85,18 +85,18 @@ class Raycaster(object):
         self.point(self.minimap["x"], self.minimap["y"])
         
 
-    def draw_stake(self, x, h, tx, intensity=1):
+    def draw_stake(self, x, h, c, tx, intensity=1):
         start_y = int(self.height/2 - h/2)
         end_y = int(self.height/2 + h/2)
         height = end_y - start_y
 
         for y in range(start_y, end_y):
             ty  = int((y-start_y)*128/height)
-            c = walls["1"].get_at((tx,ty))
+            color = walls[c].get_at((tx,ty))
             if map == "map.txt" or map == "map2.txt":
-                newcolor = (min(250,c[0]+intensity),min(c[1]+intensity,250),min(c[2]+intensity,250))
+                newcolor = (min(250,color[0]+intensity),min(color[1]+intensity,250),min(color[2]+intensity,250))
             else:
-                newcolor = (min(250,c[0]+intensity),min(c[1]+intensity,50),min(c[2]+intensity,50))
+                newcolor = (min(250,color[0]+intensity),min(color[1]+intensity,50),min(color[2]+intensity,50))
             self.point(x,y,newcolor)
         
 
@@ -157,8 +157,7 @@ class Raycaster(object):
                  
             x = i
             h = self.height/(d* cos(a -self.player["a"]))*self.height/10
-            ty = 0
-            c = walls[c].get_at((tx,ty))
+
             for j in range(0, int(self.height)):
                 if map == "map.txt" or map == "map2.txt":
                     if j > 300:
@@ -171,7 +170,7 @@ class Raycaster(object):
                     else:
                         self.point(i,j, (min(250,0+j*2),min(50,0+j*2),min(20,100+j*2)))
             
-            self.draw_stake(x, h, tx, intensity= d if d < 100 else 9*d/8)
+            self.draw_stake(x, h, c, tx, intensity= d if d < 100 else 9*d/8)
 
         screen.fill(BLACK, (0,0, r.width/5, r.height/5))
         self.draw_map()
@@ -206,7 +205,7 @@ text2 = smallfont.render('Level 2', True , color)
 text3 = smallfont.render('Level 3', True , color) 
 text4 = bigfont.render("Escapa de la niebla...", True, color)
 text5 = bigfont.render("¿Escapaste, pero ", True, color)
-text6 = bigfont.render("puedes con los otros?", True, color)
+text6 = smallfont.render("puedes con los otros?", True, color)
 def result():
     running = True
     while running:
@@ -228,9 +227,12 @@ def main():
         screen.fill(SKY, (r.width/2,0, r.width, r.height/2))
         screen.fill(GROUND, (r.width/2,r.height/2, r.width, r.height/2))
         r.render()
-        pygame.display.flip()
         clock.tick(60)
+        text6 = smallfont.render("FPS:" + str(round(clock.get_fps(),2)), True, (0,0,0))
+        screen.blit(text6 , (375,25))
         print("FPS:" + str(clock.get_fps()))
+        pygame.display.flip()
+
         
 
         for event in pygame.event.get():
